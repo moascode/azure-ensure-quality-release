@@ -1,1 +1,24 @@
+# Azure subscription vars
+variable "subscription_id" {}
+variable "client_id" {}
+variable "client_secret" {}
+variable "tenant_id" {}
+
+# Resource Group/Location
+variable "location" {}
+variable "resource_group" {}
+variable "resource_type" {}
+variable "application_type" {}
+
+# Network
+variable virtual_network_name {}
+variable address_space {}
+variable address_prefix_test {}
+variable "subnet_id" {}
+variable "public_ip" {}
+
+# VM
+variable "admin_username" {}
+variable "admin_password" {}
+variable "public_key" {}
 

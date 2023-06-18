@@ -1,7 +1,7 @@
 #!/bin/bash
-RESOURCE_GROUP_NAME="Azuredevops"
-STORAGE_ACCOUNT_NAME="tfstate$RANDOM$RANDOM"
-CONTAINER_NAME="tfstate"
+RESOURCE_GROUP_NAME="qualityrelease"
+STORAGE_ACCOUNT_NAME="qrstorage$RANDOM$RANDOM"
+CONTAINER_NAME="qrtfstate"
 
 # This command is not needed in the Udacity provided Azure account. 
 # Create resource group
