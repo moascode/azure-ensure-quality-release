@@ -10,7 +10,7 @@ pool: Test
 
 variables:
   python.version: '3.10.6'
-  azureServiceConnectionId: 'moascodeServiceConnection'
+  azureServiceConnectionId: 'moascodeAzureRmSc'
   # Project root folder
   projectRoot: $(System.DefaultWorkingDirectory)
   # Environment name
@@ -40,7 +40,7 @@ stages:
         provider: 'azurerm'
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-        backendServiceArm: 'Pay-As-You-Go-Mastery (246c6ed1-ec54-4be8-81fc-1e5c45aa22d7)'
+        backendServiceArm: '$(azureServiceConnectionId)'
         backendAzureRmResourceGroupName: 'qualityrelease'
         backendAzureRmStorageAccountName: 'qrstorage333210375'
         backendAzureRmContainerName: 'qrtfstate'
