@@ -26,14 +26,14 @@ stages:
   #---------------- Build Infrastructure using terraform ----------------------------# 
   - job: BuildInfrastructure
     pool: Test
-    steps:    
+    steps:
     # Install Terraform on the pipeline agent 
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+    - task: TerraformInstaller@1
       displayName: 'Terrafom installation'
       inputs:
         terraformVersion: 'latest'
     # Run Terraform Init on the pipeline agent 
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformTaskV3@3
+    - task: TerraformTaskV4@4
       displayName: 'Terrafom init'
       inputs:
         provider: 'azurerm'
@@ -45,13 +45,13 @@ stages:
         backendAzureRmContainerName: 'qrtfstate'
         backendAzureRmKey: 'test.terraform.tfstate'
     # Run Terraform Validate  
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformTaskV3@3
+    - task: TerraformTaskV4@4
       displayName: Terraform validate
       inputs:
         provider: 'azurerm'
         command: 'validate'
     # Run Terraform Apply
-    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformTaskV3@3
+    - task: TerraformTaskV4@4
       displayName: Terraform apply
       inputs:
         provider: 'azurerm'
