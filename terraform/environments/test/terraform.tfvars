@@ -6,7 +6,7 @@ tenant_id = "fc210d6e-088d-4914-b0c1-0044aad0cf25"
 
 # Resource Group/Location
 location = "East US"
-resource_group = "qualityrelease"
+resource_group = "qualityreleasedynamic"
 application_type = "moascodeapp"
 
 # Network
