@@ -28,12 +28,12 @@ stages:
     pool: Test
     steps:    
     # Install Terraform on the pipeline agent 
-    - task: TerraformInstaller@0
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
       displayName: 'Terrafom installation'
       inputs:
         terraformVersion: 'latest'
     # Run Terraform Init on the pipeline agent 
-    - task: TerraformTaskV3@3
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformTaskV3@3
       displayName: 'Terrafom init'
       inputs:
         provider: 'azurerm'
@@ -45,13 +45,13 @@ stages:
         backendAzureRmContainerName: 'qrtfstate'
         backendAzureRmKey: 'test.terraform.tfstate'
     # Run Terraform Validate  
-    - task: TerraformTaskV3@3
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformTaskV3@3
       displayName: Terraform validate
       inputs:
         provider: 'azurerm'
         command: 'validate'
     # Run Terraform Apply
-    - task: TerraformTaskV3@3
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformTaskV3@3
       displayName: Terraform apply
       inputs:
         provider: 'azurerm'
