@@ -10,7 +10,7 @@ pool: Test
 
 variables:
   python.version: '3.10.6'
-  azureServiceConnectionId: 'moascodeServiceConnection'
+  azureServiceConnectionId: 'Pay-As-You-Go-Mastery (246c6ed1-ec54-4be8-81fc-1e5c45aa22d7)'
   # Project root folder
   projectRoot: $(System.DefaultWorkingDirectory)
   # Environment name
@@ -27,6 +27,7 @@ stages:
   - job: BuildInfrastructure
     pool: Test
     steps:
+
     # Install Terraform on the pipeline agent 
     - task: TerraformInstaller@1
       displayName: 'Terrafom installation'
