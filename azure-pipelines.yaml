@@ -11,6 +11,7 @@ pool: Test
 variables:
   python.version: '3.10.6'
   azureServiceConnectionId: 'moascodeAzureRmSc'
+  azureSubscriptionId: 'Pay-As-You-Go-Mastery(246c6ed1-ec54-4be8-81fc-1e5c45aa22d7)' 
   # Project root folder
   projectRoot: $(System.DefaultWorkingDirectory)
   # Environment name
@@ -121,24 +122,38 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: AzureWebApp@1
-            displayName: 'Deploy Azure Web App'
+          - task: AzureRmWebAppDeployment@4
             inputs:
-              azureSubscription: '$(azureServiceConnectionId)'
-              appName: 'moascodeapp-AppService'
-              appType: webApp
-              package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-          #--------------------------------------------#    
-          # Run JMeter test suite against the App Service
-          - task: CmdLine@2
-            inputs:
-              script: |
+              ConnectionType: 'AzureRM'
+              azureSubscription: '$(azureSubscriptionId)'
+              appType: 'webAppLinux'
+              WebAppName: 'moascodeapp-AppService'
+              packageForLinux: '$(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip'
+              ScriptType: 'Inline Script'
+              InlineScript: |
                 wget "https://apache.mirrors.lucidnetworks.net//jmeter/binaries/apache-jmeter-5.2.1.tgz"
-                tar -xf apache-jmeter-5.2.1.tgz
-                unzip -o $(Build.BuildId)-perftests.zip
-                ./apache-jmeter-5.2.1/bin/jmeter -n -t EnduranceTest.jmx -j jmeter.log -f
-                cat jmeter.log
-              workingDirectory: $(Pipeline.Workspace)/drop-perftests
+                                tar -xf apache-jmeter-5.2.1.tgz
+                                unzip -o $(Build.BuildId)-perftests.zip
+                                ./apache-jmeter-5.2.1/bin/jmeter -n -t EnduranceTest.jmx -j jmeter.log -f
+                                cat jmeter.log
+          # - task: AzureWebApp@1
+          #   displayName: 'Deploy Azure Web App'
+          #   inputs:
+          #     azureSubscription: '$(azureServiceConnectionId)'
+          #     appName: 'moascodeapp-AppService'
+          #     appType: webApp
+          #     package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+          # #--------------------------------------------#    
+          # # Run JMeter test suite against the App Service
+          # - task: CmdLine@2
+          #   inputs:
+          #     script: |
+          #       wget "https://apache.mirrors.lucidnetworks.net//jmeter/binaries/apache-jmeter-5.2.1.tgz"
+          #       tar -xf apache-jmeter-5.2.1.tgz
+          #       unzip -o $(Build.BuildId)-perftests.zip
+          #       ./apache-jmeter-5.2.1/bin/jmeter -n -t EnduranceTest.jmx -j jmeter.log -f
+          #       cat jmeter.log
+          #     workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
 #   #---------------- Deploy Virtual Machine and Run Selenium | Functional UI tests ----------------------------# 
 #   - deployment: VMDeploy
