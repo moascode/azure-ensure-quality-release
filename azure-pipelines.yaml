@@ -115,7 +115,7 @@ stages:
 - stage: Deploy
   jobs:
   #---------------- Deploy FakeRestAPI Web App and Run JMeter | Performance tests ----------------------------#   
-  - deployment: FakeRestAPI
+  - deployment: WebAppWithFakeRestAPI
     pool: Test
     environment: '$(environmentName)'
     strategy:
@@ -132,48 +132,48 @@ stages:
               deploymentMethod: 'auto'
           #--------------------------------------------#    
           # Run JMeter test suite against the App Service
-          - task: CmdLine@2
-            displayName: 'Install Jmeter'
-            inputs:
-              script: |
-                if [ ! -f apache-jmeter-5.5.tgz ]; then
-                  wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
-                  tar xzvf apache-jmeter-5.5.tgz
-                fi
-                mkdir -p output/jmeter
-                mkdir -p output/jmeter/result
-                unzip -o $(Build.BuildId)-perftests.zip -d output/jmeter
-              workingDirectory: $(Pipeline.Workspace)/drop-perftests
-          - task: CmdLine@2
-            displayName: 'Endurance Test'
-            inputs:
-              script: |
-                mkdir -p output/jmeter/endurancetest
-                ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/EnduranceTest.jmx \
-                -l output/jmeter/endurancetest/endurance-test-result.csv \
-                -e -f -o output/jmeter/endurancetest/endurance-test-report.html \
-                -j output/jmeter/endurancetest/endurance.log
-                cat output/jmeter/endurancetest/endurance.log
-                zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
-                pwd
-              workingDirectory: $(Pipeline.Workspace)/drop-perftests
-          - task: CmdLine@2
-            displayName: 'Stress Test'
-            inputs:
-              script: |
-                mkdir -p output/jmeter/stresstest
-                ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/StressTest.jmx \
-                -l output/jmeter/stresstest/stres-test-result.csv \
-                -e -f -o output/jmeter/stresstest/stres-test-report.html \
-                -j output/jmeter/stresstest/stres.log
-                cat output/jmeter/stresstest/stres.log
-                zip -r output/jmeter/result/stres-test-report.zip output/jmeter/stresstest/
-                pwd
-              workingDirectory: $(Pipeline.Workspace)/drop-perftests
+          # - task: CmdLine@2
+          #   displayName: 'Install Jmeter'
+          #   inputs:
+          #     script: |
+          #       if [ ! -f apache-jmeter-5.5.tgz ]; then
+          #         wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
+          #         tar xzvf apache-jmeter-5.5.tgz
+          #       fi
+          #       mkdir -p output/jmeter
+          #       mkdir -p output/jmeter/result
+          #       unzip -o $(Build.BuildId)-perftests.zip -d output/jmeter
+          #     workingDirectory: $(Pipeline.Workspace)/drop-perftests
+          # - task: CmdLine@2
+          #   displayName: 'Endurance Test'
+          #   inputs:
+          #     script: |
+          #       mkdir -p output/jmeter/endurancetest
+          #       ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/EnduranceTest.jmx \
+          #       -l output/jmeter/endurancetest/endurance-test-result.csv \
+          #       -e -f -o output/jmeter/endurancetest/endurance-test-report.html \
+          #       -j output/jmeter/endurancetest/endurance.log
+          #       cat output/jmeter/endurancetest/endurance.log
+          #       zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
+          #       pwd
+          #     workingDirectory: $(Pipeline.Workspace)/drop-perftests
+          # - task: CmdLine@2
+          #   displayName: 'Stress Test'
+          #   inputs:
+          #     script: |
+          #       mkdir -p output/jmeter/stresstest
+          #       ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/StressTest.jmx \
+          #       -l output/jmeter/stresstest/stres-test-result.csv \
+          #       -e -f -o output/jmeter/stresstest/stres-test-report.html \
+          #       -j output/jmeter/stresstest/stres.log
+          #       cat output/jmeter/stresstest/stres.log
+          #       zip -r output/jmeter/result/stres-test-report.zip output/jmeter/stresstest/
+          #       pwd
+          #     workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
 #   #---------------- Deploy Virtual Machine and Run Selenium | Functional UI tests ----------------------------# 
   - deployment: VMDeploy
-    displayName: Selenium Tests
+    displayName: VMWithSelenium
     environment:
       name: '$(environmentName)'
       resourceType: VirtualMachine
@@ -185,12 +185,11 @@ stages:
           - download: current
             artifact: drop-uitests
           - task: Bash@3  
-            displayName: 'UI Test'
+            displayName: 'Install Selenium'
             inputs:
               targetType: 'inline'
               script: |           
                 #! /bin/bash
-                
                 sudo apt-get upgrade -y
                 sudo apt-get install python3-pip -y
                 sudo apt-get install unzip -y
@@ -205,12 +204,18 @@ stages:
                     unzip -o chromedriver_linux64.zip
                     sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
                 fi
+              workingDirectory: $(Pipeline.Workspace)/drop-uitests
+          - task: Bash@3
+            displayName: 'UI Test'
+            inputs:
+              script: |
+                #! /bin/bash
                 echo "Starting Selenium Tests"
                 python3 output/selenium/add_remove_from_cart.py >> output/selenium/result/selenium.log
                 echo "Completed Selenium Tests."
                 cat selenium.log
                 pwd
-              workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
 # #--------------------------------------------#  
 # # TEST STAGE
