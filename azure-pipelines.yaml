@@ -138,8 +138,8 @@ stages:
               script: |
                 if [ ! -f apache-jmeter-5.5.tgz ]; then
                   wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
+                  tar xzvf apache-jmeter-5.5.tgz
                 fi
-                tar xzvf apache-jmeter-5.5.tgz
                 mkdir -p output/jmeter
                 mkdir -p output/jmeter/result
                 unzip -o $(Build.BuildId)-perftests.zip -d output/jmeter
@@ -172,49 +172,44 @@ stages:
               workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
 #   #---------------- Deploy Virtual Machine and Run Selenium | Functional UI tests ----------------------------# 
-#   - deployment: VMDeploy
-#     displayName: Selenium Tests
-#     environment:
-#       name: '$(environmentName)'
-#       resourceType: VirtualMachine
-#       tags: selenium
-#     strategy:
-#       runOnce:
-#         deploy:
-#           steps:
-#           - download: current
-#             artifact: drop-ui-tests
-#           - task: Bash@3
-#             inputs:
-#               targetType: 'inline'
-#               script: |           
-#                 #! /bin/bash
+  - deployment: VMDeploy
+    displayName: Selenium Tests
+    environment:
+      name: '$(environmentName)'
+      resourceType: VirtualMachine
+      tags: selenium
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop-ui-tests
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |           
+                #! /bin/bash
                 
-#                 sudo apt-get upgrade -y
-#                 sudo apt-get install python3-pip -y
-#                 sudo apt-get install unzip -y
-#                 sudo apt-get install -y chromium-browser
-#                 pip3 install selenium
-#                 cd ~/
-#                 DIR=/home/mohalunix/app
-#                 if [ ! -d "$DIR" ]; then
-#                     mkdir app
-#                 fi
-#                 mv /home/mohalunix/azagent/_work/1/drop-uitests/$(Build.BuildId)-uitests.zip app
-#                 cd app
-#                 unzip -o $(Build.BuildId)-uitests.zip
-#                 FILE=/home/mohalunix/app/chromedriver_linux64.zip
-#                 if [ ! -f "$FILE" ]; then
-#                     LATEST=$(wget -q -O - http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-#                     wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
-#                     unzip -o chromedriver_linux64.zip
-#                     sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
-#                 fi
-#                 export PATH=$PATH:/home/mohalunix/app
-#                 echo "Starting Selenium Tests"
-#                 python3 add_remove_from_cart.py >> selenium.log
-#                 echo "Completed Selenium Tests."
-#                 cat selenium.log
+                sudo apt-get upgrade -y
+                sudo apt-get install python3-pip -y
+                sudo apt-get install unzip -y
+                sudo apt-get install -y chromium-browser
+                pip3 install selenium
+                mkdir -p output/selenium
+                mkdir -p output/selenium/result
+                unzip -o $(Build.BuildId)-uitests.zip -d output/selenium
+                if [ ! -f chromedriver_linux64.zip ]; then
+                    LATEST=$(wget -q -O - http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+                    wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
+                    unzip -o chromedriver_linux64.zip
+                    sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
+                fi
+                echo "Starting Selenium Tests"
+                python3 output/selenium/add_remove_from_cart.py >> output/selenium/result/selenium.log
+                echo "Completed Selenium Tests."
+                cat selenium.log
+                pwd
+              workingDirectory: $(Pipeline.Workspace)/drop-ui-tests
 
 # #--------------------------------------------#  
 # # TEST STAGE
