@@ -153,6 +153,7 @@ stages:
                 -j output/jmeter/endurancetest/endurance.log
                 cat output/jmeter/endurancetest/endurance.log
                 zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
+                pwd
               workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
 #   #---------------- Deploy Virtual Machine and Run Selenium | Functional UI tests ----------------------------# 

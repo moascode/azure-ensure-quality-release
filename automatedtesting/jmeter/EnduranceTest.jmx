@@ -26,6 +26,15 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
@@ -89,12 +98,12 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;ID&quot;: ${ID},&#xd;
-  &quot;Title&quot;: ${Title},&#xd;
-  &quot;Description&quot;: ${Description},&#xd;
-  &quot;PageCount&quot;: ${PageCount},&#xd;
-  &quot;Excerpt&quot;: ${Excerpt},&#xd;
-  &quot;PublishDate&quot;: ${PublishDate}&#xd;
+  &quot;ID&quot;: &quot;${ID}&quot;,&#xd;
+  &quot;Title&quot;: &quot;${Title}&quot;,&#xd;
+  &quot;Description&quot;: &quot;${Description}&quot;,&#xd;
+  &quot;PageCount&quot;: &quot;${PageCount}&quot;,&#xd;
+  &quot;Excerpt&quot;: &quot;${Excerpt}&quot;,&#xd;
+  &quot;PublishDate&quot;: &quot;${PublishDate}&quot;&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
@@ -122,12 +131,12 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-  &quot;ID&quot;: ${ID},&#xd;
-  &quot;Title&quot;: ${Title},&#xd;
-  &quot;Description&quot;: ${Description},&#xd;
-  &quot;PageCount&quot;: ${PageCount},&#xd;
-  &quot;Excerpt&quot;: ${Excerpt},&#xd;
-  &quot;PublishDate&quot;: ${PublishDate}&#xd;
+  &quot;ID&quot;: &quot;${ID}&quot;,&#xd;
+  &quot;Title&quot;: &quot;${Title}&quot;,&#xd;
+  &quot;Description&quot;: &quot;${Description}&quot;,&#xd;
+  &quot;PageCount&quot;: &quot;${PageCount}&quot;,&#xd;
+  &quot;Excerpt&quot;: &quot;${Excerpt}&quot;,&#xd;
+  &quot;PublishDate&quot;: &quot;${PublishDate}&quot;&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
@@ -150,15 +159,7 @@
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete Book" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="id" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">${bookid}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-                <boolProp name="HTTPArgument.use_equals">true</boolProp>
-                <stringProp name="Argument.name">id</stringProp>
-              </elementProp>
-            </collectionProp>
+            <collectionProp name="Arguments.arguments"/>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${hostname}</stringProp>
           <stringProp name="HTTPSampler.port">${port}</stringProp>
@@ -198,7 +199,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Book IDs CSV" enabled="true">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding"></stringProp>
-        <stringProp name="filename">book_ids.csv</stringProp>
+        <stringProp name="filename">https://github.com/moascode/azure-ensure-quality-release/blob/main/automatedtesting/jmeter/book_ids.csv</stringProp>
         <boolProp name="ignoreFirstLine">false</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <boolProp name="recycle">true</boolProp>
@@ -211,7 +212,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="hostname" elementType="Argument">
             <stringProp name="Argument.name">hostname</stringProp>
-            <stringProp name="Argument.value">http://moascodeapp-appservice.azurewebsites.net/</stringProp>
+            <stringProp name="Argument.value">moascodeapp-appservice.azurewebsites.net</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="protocol" elementType="Argument">
@@ -265,7 +266,7 @@
       </ResultCollector>
       <hashTree/>
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Obj book CSV" enabled="true">
-        <stringProp name="filename">books.csv</stringProp>
+        <stringProp name="filename">https://github.com/moascode/azure-ensure-quality-release/blob/main/automatedtesting/jmeter/books.csv</stringProp>
         <stringProp name="fileEncoding"></stringProp>
         <stringProp name="variableNames">ID,Title,Description,PageCount,Excerpt,PublishDate</stringProp>
         <boolProp name="ignoreFirstLine">true</boolProp>
