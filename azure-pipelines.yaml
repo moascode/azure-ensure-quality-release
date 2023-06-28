@@ -132,44 +132,47 @@ stages:
               deploymentMethod: 'auto'
           #--------------------------------------------#    
           # Run JMeter test suite against the App Service
-          # - task: CmdLine@2
-          #   displayName: 'Install Jmeter'
-          #   inputs:
-          #     script: |
-          #       if [ ! -f apache-jmeter-5.5.tgz ]; then
-          #         wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
-          #         tar xzvf apache-jmeter-5.5.tgz
-          #       fi
-          #       mkdir -p output/jmeter
-          #       mkdir -p output/jmeter/result
-          #       unzip -o $(Build.BuildId)-perftests.zip -d output/jmeter
-          #     workingDirectory: $(Pipeline.Workspace)/drop-perftests
-          # - task: CmdLine@2
-          #   displayName: 'Endurance Test'
-          #   inputs:
-          #     script: |
-          #       mkdir -p output/jmeter/endurancetest
-          #       ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/EnduranceTest.jmx \
-          #       -l output/jmeter/endurancetest/endurance-test-result.csv \
-          #       -e -f -o output/jmeter/endurancetest/endurance-test-report.html \
-          #       -j output/jmeter/endurancetest/endurance.log
-          #       cat output/jmeter/endurancetest/endurance.log
-          #       zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
-          #       pwd
-          #     workingDirectory: $(Pipeline.Workspace)/drop-perftests
-          # - task: CmdLine@2
-          #   displayName: 'Stress Test'
-          #   inputs:
-          #     script: |
-          #       mkdir -p output/jmeter/stresstest
-          #       ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/StressTest.jmx \
-          #       -l output/jmeter/stresstest/stres-test-result.csv \
-          #       -e -f -o output/jmeter/stresstest/stres-test-report.html \
-          #       -j output/jmeter/stresstest/stres.log
-          #       cat output/jmeter/stresstest/stres.log
-          #       zip -r output/jmeter/result/stres-test-report.zip output/jmeter/stresstest/
-          #       pwd
-          #     workingDirectory: $(Pipeline.Workspace)/drop-perftests
+          - task: CmdLine@2
+            displayName: 'Install Jmeter'
+            enabled: false
+            inputs:
+              script: |
+                if [ ! -f apache-jmeter-5.5.tgz ]; then
+                  wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
+                  tar xzvf apache-jmeter-5.5.tgz
+                fi
+                mkdir -p output/jmeter
+                mkdir -p output/jmeter/result
+                unzip -o $(Build.BuildId)-perftests.zip -d output/jmeter
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
+          - task: CmdLine@2
+            displayName: 'Endurance Test'
+            enabled: false
+            inputs:
+              script: |
+                mkdir -p output/jmeter/endurancetest
+                ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/EnduranceTest.jmx \
+                -l output/jmeter/endurancetest/endurance-test-result.csv \
+                -e -f -o output/jmeter/endurancetest/endurance-test-report.html \
+                -j output/jmeter/endurancetest/endurance.log
+                cat output/jmeter/endurancetest/endurance.log
+                zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
+                pwd
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
+          - task: CmdLine@2
+            displayName: 'Stress Test'
+            enabled: false
+            inputs:
+              script: |
+                mkdir -p output/jmeter/stresstest
+                ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/StressTest.jmx \
+                -l output/jmeter/stresstest/stres-test-result.csv \
+                -e -f -o output/jmeter/stresstest/stres-test-report.html \
+                -j output/jmeter/stresstest/stres.log
+                cat output/jmeter/stresstest/stres.log
+                zip -r output/jmeter/result/stres-test-report.zip output/jmeter/stresstest/
+                pwd
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
 #   #---------------- Deploy Virtual Machine and Run Selenium | Functional UI tests ----------------------------# 
   - deployment: VMDeploy
@@ -202,6 +205,7 @@ stages:
                     LATEST=$(wget -q -O - http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
                     wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
                     unzip -o chromedriver_linux64.zip
+                    unlink /usr/local/bin/chromedriver
                     sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
                 fi
               workingDirectory: $(Pipeline.Workspace)/drop-uitests
