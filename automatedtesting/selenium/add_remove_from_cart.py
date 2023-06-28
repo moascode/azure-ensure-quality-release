@@ -66,7 +66,7 @@ def remove_products(driver):
 
     cart_items_count = len(driver.find_elements(By.CLASS_NAME,'cart_item'))
     assert cart_items_count == 0,'ERROR: Not all products were removed from the cart'
-    
+
     print(f'{log()} All products removed from the cart successfully')
 
 if __name__ == "__main__":

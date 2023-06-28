@@ -208,10 +208,12 @@ stages:
                     unlink /usr/local/bin/chromedriver
                     sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
                 fi
+                export PATH=$PATH:$PWD/chromedriver
               workingDirectory: $(Pipeline.Workspace)/drop-uitests
           - task: Bash@3
             displayName: 'UI Test'
             inputs:
+              targetType: 'inline'
               script: |
                 #! /bin/bash
                 echo "Starting Selenium Tests"
