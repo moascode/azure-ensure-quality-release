@@ -136,7 +136,9 @@ stages:
             displayName: 'Install Jmeter'
             inputs:
               script: |
-                wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
+                if [ ! -f apache-jmeter-5.5.tgz ]; then
+                  wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
+                fi
                 tar xzvf apache-jmeter-5.5.tgz
                 mkdir -p output/jmeter
                 mkdir -p output/jmeter/result
@@ -153,6 +155,19 @@ stages:
                 -j output/jmeter/endurancetest/endurance.log
                 cat output/jmeter/endurancetest/endurance.log
                 zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
+                pwd
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
+          - task: CmdLine@2
+            displayName: 'Stress Test'
+            inputs:
+              script: |
+                mkdir -p output/jmeter/stresstest
+                ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/StressTest.jmx \
+                -l output/jmeter/stresstest/stres-test-result.csv \
+                -e -f -o output/jmeter/stresstest/stres-test-report.html \
+                -j output/jmeter/stresstest/stres.log
+                cat output/jmeter/stresstest/stres.log
+                zip -r output/jmeter/result/stres-test-report.zip output/jmeter/stresstest/
                 pwd
               workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
