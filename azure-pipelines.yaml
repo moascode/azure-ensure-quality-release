@@ -183,8 +183,9 @@ stages:
         deploy:
           steps:
           - download: current
-            artifact: drop-ui-tests
-          - task: Bash@3
+            artifact: drop-uitests
+          - task: Bash@3  
+            displayName: 'UI Test'
             inputs:
               targetType: 'inline'
               script: |           
