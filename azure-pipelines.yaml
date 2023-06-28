@@ -219,7 +219,7 @@ stages:
                 echo "Completed Selenium Tests."
                 cat selenium.log
                 pwd
-              workingDirectory: $(Pipeline.Workspace)/drop-perftests
+              workingDirectory: $(Pipeline.Workspace)/drop-uitests
 
 # #--------------------------------------------#  
 # # TEST STAGE
