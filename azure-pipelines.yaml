@@ -150,7 +150,7 @@ stages:
                 ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/EnduranceTest.jmx \
                 -l output/jmeter/endurancetest/endurance-test-result.csv \
                 -e -f -o output/jmeter/endurancetest/endurance-test-report.html \
-                -j output/jmeter/endurancetest/endurance.log -f
+                -j output/jmeter/endurancetest/endurance.log
                 cat output/jmeter/endurancetest/endurance.log
                 zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
               workingDirectory: $(Pipeline.Workspace)/drop-perftests
