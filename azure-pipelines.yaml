@@ -101,7 +101,7 @@ stages:
     - task: ArchiveFiles@2
       displayName: 'Archive PerformanceTestSuite'
       inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/jmeter'
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip' 
@@ -122,52 +122,37 @@ stages:
       runOnce:
         deploy:
           steps:
-          # - task: AzureRmWebAppDeployment@4
-          #   inputs:
-          #     ConnectionType: 'AzureRM'
-          #     azureSubscription: '$(azureSubscriptionId)'
-          #     appType: 'webApp'
-          #     WebAppName: 'moascodeapp-AppService'
-          #     packageForLinux: '$(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip'
-          # - task: AzureRmWebAppDeployment@4
-          #   inputs:
-          #     ConnectionType: 'AzureRM'
-          #     azureSubscription: '$(azureSubscriptionId)'
-          #     appType: 'webAppLinux'
-          #     WebAppName: 'moascodeapp-AppService'
-          #     packageForLinux: '$(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip'
-          #     ScriptType: 'Inline Script'
-          #     InlineScript: |
-          #       wget "https://apache.mirrors.lucidnetworks.net//jmeter/binaries/apache-jmeter-5.2.1.tgz"
-          #                       tar -xf apache-jmeter-5.2.1.tgz
-          #                       unzip -o $(Build.BuildId)-perftests.zip
-          #                       ./apache-jmeter-5.2.1/bin/jmeter -n -t EnduranceTest.jmx -j jmeter.log -f
-          #                       cat jmeter.log
           - task: AzureWebApp@1
+            displayName: 'Deploy WebApp'
             inputs:
               azureSubscription: '$(azureSubscriptionId)'
               appType: 'webApp'
               appName: 'moascodeapp-AppService'
               package: '$(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip'
               deploymentMethod: 'auto'
-          # - task: AzureWebApp@1
-          #   displayName: 'Deploy Azure Web App'
-          #   inputs:
-          #     azureSubscription: '$(azureSubscriptionId)'
-          #     appName: 'moascodeapp-AppService'
-          #     appType: webApp
-          #     package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
           #--------------------------------------------#    
           # Run JMeter test suite against the App Service
+          - task: CmdLine@2
+            displayName: 'Install Jmeter'
+            inputs:
+              script: |
+                wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
+                tar xzvf apache-jmeter-5.5.tgz
+                mkdir -p output/jmeter
+                mkdir -p output/jmeter/result
+                unzip -o $(Build.BuildId)-perftests.zip -d output/jmeter
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
           - task: CmdLine@2
             displayName: 'Endurance Test'
             inputs:
               script: |
-                wget "https://apache.mirrors.lucidnetworks.net//jmeter/binaries/apache-jmeter-5.2.1.tgz"
-                tar -xf apache-jmeter-5.2.1.tgz
-                unzip -o $(Build.BuildId)-perftests.zip
-                ./apache-jmeter-5.2.1/bin/jmeter -n -t EnduranceTest.jmx -j jmeter.log -f
-                cat jmeter.log
+                mkdir -p output/jmeter/endurancetest
+                ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/EnduranceTest.jmx \
+                -l output/jmeter/endurancetest/endurance-test-result.csv \
+                -e -f -o output/jmeter/endurancetest/endurance-test-report.html \
+                -j output/jmeter/endurancetest/endurance.log -f
+                cat output/jmeter/endurancetest/endurance.log
+                zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
               workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
 #   #---------------- Deploy Virtual Machine and Run Selenium | Functional UI tests ----------------------------# 
