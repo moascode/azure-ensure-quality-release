@@ -24,6 +24,7 @@ stages:
 #--------------------------------------------#    
 - stage: Build
   jobs:
+
   #---------------- Build Infrastructure using terraform ----------------------------# 
   - job: BuildInfrastructure
     pool: Test
@@ -61,21 +62,11 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
         environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
-    # ToDo: Change the workingDirectory path, as applicable to you
-    # Destroy the resources in Azure by running a separate pipeline. 
-    # - task: TerraformTaskV3@3
-    #   displayName: Terraform destroy
-    #   inputs:
-    #     provider: 'azurerm'
-    #     command: 'destroy'
-    #     workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-    #     environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
-
-  #---------------- Build and publish package ----------------------------# 
+  #---------------- Build and publish package ----------------------------#
   - job: BuildAndPublishPackage
     pool: Test
     steps:
-    # Selenium (UI) Test Suite - Archive and publish the package  
+    # Selenium (UI) Test Suite - Archive and publish the package
     - task: ArchiveFiles@2
       displayName: 'Archive UI Tests'
       inputs:
@@ -109,13 +100,13 @@ stages:
       displayName: 'Upload Package'
       artifact: drop-perftests
 
-#--------------------------------------------#  
+#--------------------------------------------#
 # DEPLOYMENT STAGE
-#--------------------------------------------#    
+#--------------------------------------------#
 - stage: Deploy
   jobs:
-  #---------------- Deploy FakeRestAPI Web App and Run JMeter | Performance tests ----------------------------#   
-  - deployment: WebAppWithFakeRestAPI
+  #---------------- Deploy FakeRestAPI Web App ----------------------------#   
+  - deployment: WebApp-FakeRestAPI
     pool: Test
     environment: '$(environmentName)'
     strategy:
@@ -130,51 +121,95 @@ stages:
               appName: 'moascodeapp-AppService'
               package: '$(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip'
               deploymentMethod: 'auto'
-          #--------------------------------------------#    
-          # Run JMeter test suite against the App Service
-          - task: CmdLine@2
-            displayName: 'Install Jmeter'
-            enabled: true
-            inputs:
-              script: |
-                if [ ! -f apache-jmeter-5.5.tgz ]; then
-                  wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
-                  tar xzvf apache-jmeter-5.5.tgz
-                fi
-                mkdir -p output/jmeter
-                mkdir -p output/jmeter/result
-                unzip -o $(Build.BuildId)-perftests.zip -d output/jmeter
-              workingDirectory: $(Pipeline.Workspace)/drop-perftests
-          - task: CmdLine@2
-            displayName: 'Endurance Test'
-            enabled: true
-            inputs:
-              script: |
-                mkdir -p output/jmeter/endurancetest
-                ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/EnduranceTest.jmx \
-                -l output/jmeter/endurancetest/endurance-test-result.csv \
-                -e -f -o output/jmeter/endurancetest/endurance-test-report.html \
-                -j output/jmeter/endurancetest/endurance.log
-                cat output/jmeter/endurancetest/endurance.log
-                zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
-                pwd
-              workingDirectory: $(Pipeline.Workspace)/drop-perftests
-          - task: CmdLine@2
-            displayName: 'Stress Test'
-            enabled: true
-            inputs:
-              script: |
-                mkdir -p output/jmeter/stresstest
-                ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/StressTest.jmx \
-                -l output/jmeter/stresstest/stres-test-result.csv \
-                -e -f -o output/jmeter/stresstest/stres-test-report.html \
-                -j output/jmeter/stresstest/stres.log
-                cat output/jmeter/stresstest/stres.log
-                zip -r output/jmeter/result/stres-test-report.zip output/jmeter/stresstest/
-                pwd
-              workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
-#   #---------------- Deploy Virtual Machine and Run Selenium | Functional UI tests ----------------------------# 
+#--------------------------------------------#
+# TEST STAGE
+#--------------------------------------------#
+- stage: Test
+  jobs:
+  #---------------- Run Postman | Validation and Regression tests ----------------------------# 
+  - job: PostmanTest
+    pool: Test
+    steps:
+    # Postman - Install Newman
+    - task: NodeTool@0
+      displayName: Install Node
+      inputs:
+        versionSpec: '12.x'
+    - bash: |
+        npm install -g newman  
+      displayName: Install Newman CLI
+    # Postman Data Validation Test Suite    
+    - task: CmdLine@2
+      displayName: Run Data Validation Tests
+      continueOnError: true
+      inputs:
+        script: 'newman run TestSuite.DataValidation.json -e Test.Env.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+    # Postman Regression Test Suite    
+    - task: CmdLine@2
+      displayName: Run Regression Tests
+      continueOnError: true
+      inputs:
+        script: 'newman run TestSuite.Regression.json -e Test.Env.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+    # Postman - Publish Results 
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/TEST-*.xml'
+        searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman' 
+        mergeTestResults: true
+        testRunTitle: 'Postman Test Run'
+
+  #---------------- Run JMeter | Endurance and Stress tests ----------------------------# 
+  - job: JMeterTest
+    pool: Test
+    steps:    
+    # Run JMeter test suite against the App Service
+    - task: CmdLine@2
+      displayName: 'Install Jmeter'
+      enabled: true
+      inputs:
+        script: |
+          if [ ! -f apache-jmeter-5.5.tgz ]; then
+            wget "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz"
+            tar xzvf apache-jmeter-5.5.tgz
+          fi
+          mkdir -p output/jmeter
+          mkdir -p output/jmeter/result
+          unzip -o $(Build.BuildId)-perftests.zip -d output/jmeter
+        workingDirectory: $(Pipeline.Workspace)/drop-perftests
+    - task: CmdLine@2
+      displayName: 'Endurance Test'
+      enabled: true
+      inputs:
+        script: |
+          mkdir -p output/jmeter/endurancetest
+          ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/EnduranceTest.jmx \
+          -l output/jmeter/endurancetest/endurance-test-result.csv \
+          -e -f -o output/jmeter/endurancetest/endurance-test-report.html \
+          -j output/jmeter/endurancetest/endurance.log
+          cat output/jmeter/endurancetest/endurance.log
+          zip -r output/jmeter/result/endurance-test-report.zip output/jmeter/endurancetest/
+          pwd
+        workingDirectory: $(Pipeline.Workspace)/drop-perftests
+    - task: CmdLine@2
+      displayName: 'Stress Test'
+      enabled: true
+      inputs:
+        script: |
+          mkdir -p output/jmeter/stresstest
+          ./apache-jmeter-5.5/bin/jmeter -n -t output/jmeter/StressTest.jmx \
+          -l output/jmeter/stresstest/stres-test-result.csv \
+          -e -f -o output/jmeter/stresstest/stres-test-report.html \
+          -j output/jmeter/stresstest/stres.log
+          cat output/jmeter/stresstest/stres.log
+          zip -r output/jmeter/result/stres-test-report.zip output/jmeter/stresstest/
+          pwd
+        workingDirectory: $(Pipeline.Workspace)/drop-perftests
+  
+  #---------------- Deploy Virtual Machine and Run Selenium | Functional UI tests ----------------------------# 
   - deployment: VMDeploy
     displayName: VMWithSelenium
     environment:
@@ -219,48 +254,11 @@ stages:
               script: |
                 #! /bin/bash
                 echo "Starting Selenium Tests"
+                if [ -f output/selenium/result/selenium.log ]; then
+                  rm output/selenium/result/selenium.log
+                fi
                 python3 output/selenium/add_remove_from_cart.py >> output/selenium/result/selenium.log
                 echo "Completed Selenium Tests."
                 cat output/selenium/result/selenium.log
                 pwd
               workingDirectory: $(Pipeline.Workspace)/drop-uitests
-
-# #--------------------------------------------#  
-# # TEST STAGE
-# #--------------------------------------------#
-- stage: PostDeploymentTest
-  jobs:
-  #---------------- Run Postman | Validation and Regression tests ----------------------------# 
-  - job: PostmanTest
-    pool: Test
-    steps:
-    # Postman - Install Newman    
-    - task: NodeTool@0
-      displayName: Install Node
-      inputs:
-        versionSpec: '12.x'
-    - bash: |
-        npm install -g newman  
-      displayName: Install Newman CLI
-    # Postman Data Validation Test Suite    
-    - task: CmdLine@2
-      displayName: Run Data Validation Tests
-      continueOnError: true
-      inputs:
-        script: 'newman run TestSuite.DataValidation.json -e Test.Env.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
-    # Postman Regression Test Suite    
-    - task: CmdLine@2
-      displayName: Run Regression Tests
-      continueOnError: true
-      inputs:
-        script: 'newman run TestSuite.Regression.json -e Test.Env.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
-    # Postman - Publish Results 
-    - task: PublishTestResults@2
-      inputs:
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '**/TEST-*.xml'
-        searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman' 
-        mergeTestResults: true
-        testRunTitle: 'Postman Test Run'
