@@ -19,6 +19,9 @@ def startup():
     options.add_argument("--headless")
     options.add_argument('--ignore-certificate-errors')
     options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--profile-directory=Default')
+    options.add_argument('--user-data-dir=~/.config/google-chrome')
     driver = webdriver.Chrome(options=options)
     print (f'{log()} Browser started successfully. Navigating to the demo page to login.')
     return driver
