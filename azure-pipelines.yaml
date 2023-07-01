@@ -106,7 +106,7 @@ stages:
 - stage: Deploy
   jobs:
   #---------------- Deploy FakeRestAPI Web App ----------------------------#   
-  - deployment: WebApp-FakeRestAPI
+  - deployment: WebAppFakeRestAPI
     pool: Test
     environment: '$(environmentName)'
     strategy:
@@ -211,7 +211,7 @@ stages:
   
   #---------------- Deploy Virtual Machine and Run Selenium | Functional UI tests ----------------------------# 
   - deployment: VMDeploy
-    displayName: VMWithSelenium
+    displayName: SeleniumTest
     environment:
       name: '$(environmentName)'
       resourceType: VirtualMachine
