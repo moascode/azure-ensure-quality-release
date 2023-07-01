@@ -9,29 +9,73 @@ This project is to create disposable test environments and run a variety of auto
 5. Python
 6. Selenium
 
-## Setting Up Dev Environment
+## Build
+* Successful execution of the pipeline
+
+    ![Build Result](/screenshots/build_result.png)
+
 * Log output of Terraform
 
-## Build
-### screenshot of the successful execution of the pipeline (/_build/results?buildId={id}&view=results)
+    ![Terraform Log](/screenshots/terraform_log.png)
 
 ## Deploy
+* Successfull deployment of FakeRestApi
+
+    ![Webapp Deploy](/screenshots/webapp_deploy.png)
 
 ## Test
-### Postman: Run Summary page (which contains 4 graphs)
-### Postman: Test Results page (which contains the test case titles from each test)
-### Postman: Publish Test Results step
+### Validation and Regression Test
+* Postman: Publish Test Result step
 
-### Selenium: screenshot of the successful execution of the Test Suite on a VM
+    ![Publish Test](/screenshots/postman_publish_test.png)
 
-### JMeter: log output of JMeter when executed by the CI/CD pipeline (start with “summary” and “Starting standalone test @”)
+* Postman: Run Summary of tests
+
+    ![Postman Tests Summary](/screenshots/postman_tests_summary.png)
+
+* Postman: Data Validation Test Result
+
+    ![Data Validation Tests](/screenshots/postman_data_validation_tests.png)
+
+* Postman: Data Regression Test Result
+
+    ![Data Regression Tests](/screenshots/postman_data_regression_tests.png)
+
+### UI Test
+* Selenium: Successful execution of the Test Suite on VM
+
+    ![UI Tests](/screenshots/selenium_ui_tests.png)
+
+### Endurance and Stress Test
+* JMeter: Endurance Test Run
+
+    ![Endurance Tests](/screenshots/jmeter_endurance_tests.png)
+
+* JMeter: Stress Test Run
+
+    ![Stress Tests](/screenshots/jmeter_stress_tests.png)
 
 ## Logging and Monitoring
-### Screenshots of the email received when the alert is triggered
-###  the graphs of the resource that the alert was triggered for (be sure to include timestamps for the email and the graphs)
-### the alert rule, which will show the resource, condition, action group, alert name, and severity
-### Screenshots of log analytics queries and result sets
-The result set will include the output of the execution of the Selenium Test Suite
+* WebApp alert rule of Http404
 
-## Suggestions and Corrections
-Feel free to submit PRs to this repo should you have any proposed changes. 
+    ![Alert Rule](/screenshots/webapp_alert_rule.png)
+
+* WebApp alert actiongroup of Http404
+
+    ![Alert Action Group](/screenshots/webapp_alert_action_group.png)
+
+* Email notification of the alert
+
+    ![Email Alert](/screenshots/email_alert.png)
+
+* WebApp graph of the alert
+
+    ![WebApp Metrics](/screenshots/webapp_metrics.png)
+
+* Log analytics of the WebApp
+
+    ![WebApp Log Analytics](/screenshots/webapp_log_analytics.png)
+
+* Log analytics of the Selenium Test Suite
+
+    ![Selenium Log Analytics](/screenshots/selenium_log_analytics.png)
