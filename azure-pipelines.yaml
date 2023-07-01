@@ -189,6 +189,7 @@ stages:
             artifact: drop-uitests
           - task: Bash@3  
             displayName: 'Install Selenium'
+            enabled: false
             inputs:
               targetType: 'inline'
               script: |           
@@ -212,6 +213,7 @@ stages:
               workingDirectory: $(Pipeline.Workspace)/drop-uitests
           - task: Bash@3
             displayName: 'UI Test'
+            enabled: false
             inputs:
               targetType: 'inline'
               script: |
@@ -226,39 +228,39 @@ stages:
 # #--------------------------------------------#  
 # # TEST STAGE
 # #--------------------------------------------#
-# - stage: PostDeploymentTest
-#   jobs:
-#   #---------------- Run Postman | Validation and Regression tests ----------------------------# 
-#   - job: PostmanTest
-#     pool: Test
-#     steps:
-#     # Postman - Install Newman    
-#     - task: NodeTool@0
-#       displayName: Install Node
-#       inputs:
-#         versionSpec: '12.x'
-#     - bash: |
-#         npm install -g newman  
-#       displayName: Install Newman CLI
-#     # Postman Data Validation Test Suite    
-#     - task: CmdLine@2
-#       displayName: Run Data Validation Tests
-#       continueOnError: true
-#       inputs:
-#         script: 'newman run TestSuite.Data-Validation.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
-#         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
-#     # Postman Regression Test Suite    
-#     - task: CmdLine@2
-#       displayName: Run Regression Tests
-#       continueOnError: true
-#       inputs:
-#         script: 'newman run TestSuite.Regression.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
-#         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
-#     # Postman - Publish Results 
-#     - task: PublishTestResults@2
-#       inputs:
-#         testResultsFormat: 'JUnit'
-#         testResultsFiles: '**/TEST-*.xml'
-#         searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman/result' 
-#         mergeTestResults: true
-#         testRunTitle: 'Postman Test Run'
+- stage: PostDeploymentTest
+  jobs:
+  #---------------- Run Postman | Validation and Regression tests ----------------------------# 
+  - job: PostmanTest
+    pool: Test
+    steps:
+    # Postman - Install Newman    
+    - task: NodeTool@0
+      displayName: Install Node
+      inputs:
+        versionSpec: '12.x'
+    - bash: |
+        npm install -g newman  
+      displayName: Install Newman CLI
+    # Postman Data Validation Test Suite    
+    - task: CmdLine@2
+      displayName: Run Data Validation Tests
+      continueOnError: true
+      inputs:
+        script: 'newman run TestSuite.DataValidation.json -e Test.Env.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+    # Postman Regression Test Suite    
+    - task: CmdLine@2
+      displayName: Run Regression Tests
+      continueOnError: true
+      inputs:
+        script: 'newman run TestSuite.Regression.json -e Test.Env.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+    # Postman - Publish Results 
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/TEST-*.xml'
+        searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman/result' 
+        mergeTestResults: true
+        testRunTitle: 'Postman Test Run'
