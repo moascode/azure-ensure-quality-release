@@ -57,10 +57,11 @@ def remove_products(driver):
     driver.find_element(By.CLASS_NAME,'shopping_cart_link').click()
     assert URL_CART in driver.current_url
 
-    cart_items_count = len(driver.find_elements(By.CLASS_NAME,'cart_item'))
+    cart_items = driver.find_elements(By.CLASS_NAME,'cart_item')
+    cart_items_count = len(cart_items)
     print(f'{log()} Number of items in the cart {cart_items_count}')
 
-    for product in driver.find_element(By.CLASS_NAME, 'cart_item'):
+    for product in cart_items:
         product_name = product.find_element(By.CLASS_NAME,'inventory_item_name').text
         product.find_element(By.CLASS_NAME,'cart_button').click()
         print(f'{log()} {product_name} removed from the cart')
