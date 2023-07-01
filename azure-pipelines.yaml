@@ -134,7 +134,7 @@ stages:
           # Run JMeter test suite against the App Service
           - task: CmdLine@2
             displayName: 'Install Jmeter'
-            enabled: false
+            enabled: true
             inputs:
               script: |
                 if [ ! -f apache-jmeter-5.5.tgz ]; then
@@ -147,7 +147,7 @@ stages:
               workingDirectory: $(Pipeline.Workspace)/drop-perftests
           - task: CmdLine@2
             displayName: 'Endurance Test'
-            enabled: false
+            enabled: true
             inputs:
               script: |
                 mkdir -p output/jmeter/endurancetest
@@ -161,7 +161,7 @@ stages:
               workingDirectory: $(Pipeline.Workspace)/drop-perftests
           - task: CmdLine@2
             displayName: 'Stress Test'
-            enabled: false
+            enabled: true
             inputs:
               script: |
                 mkdir -p output/jmeter/stresstest
@@ -189,7 +189,7 @@ stages:
             artifact: drop-uitests
           - task: Bash@3  
             displayName: 'Install Selenium'
-            enabled: false
+            enabled: true
             inputs:
               targetType: 'inline'
               script: |           
@@ -213,7 +213,7 @@ stages:
               workingDirectory: $(Pipeline.Workspace)/drop-uitests
           - task: Bash@3
             displayName: 'UI Test'
-            enabled: false
+            enabled: true
             inputs:
               targetType: 'inline'
               script: |
@@ -261,6 +261,6 @@ stages:
       inputs:
         testResultsFormat: 'JUnit'
         testResultsFiles: '**/TEST-*.xml'
-        searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman/result' 
+        searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman' 
         mergeTestResults: true
         testRunTitle: 'Postman Test Run'
