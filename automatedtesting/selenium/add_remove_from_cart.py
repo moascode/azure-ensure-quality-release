@@ -15,10 +15,11 @@ def log():
 def startup():
     print(f'{log()} Starting the browser...')
     options = ChromeOptions()
-    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
+    options.add_argument("--headless")
     options.add_argument('--ignore-certificate-errors')
-    driver = webdriver.Chrome(options=options, executable_path='chromedriver')
+    options.add_argument('--disable-dev-shm-usage')
+    driver = webdriver.Chrome(options=options)
     print (f'{log()} Browser started successfully. Navigating to the demo page to login.')
     return driver
 
