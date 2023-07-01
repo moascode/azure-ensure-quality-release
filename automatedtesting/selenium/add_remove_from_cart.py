@@ -30,7 +30,7 @@ def login (driver, user, password):
     driver.find_element(By.ID, 'password').send_keys(password)
     driver.find_element(By.ID,'login-button').click()
     assert URL_INVENTORY in driver.current_url, "Error, login failed!"
-    print(f'{log()} Login with username {user} successful')
+    print(f'{log()} User {user} logged in successfully')
 
 def add_products(driver):
     print(f'{log()} Starting to add products to the cart')
@@ -50,7 +50,7 @@ def add_products(driver):
     for item in driver.find_elements(By.CLASS_NAME, 'inventory_item_name'):
         assert item.text in cart_items, 'ERROR: All products are not added to the cart'
 
-    print(f'{log()} All products added to the cart')
+    print(f'{log()} All products added to the cart successfully')
 
 def remove_products(driver):
     print(f'{log()} Navigating to cart page')
