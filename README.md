@@ -2,15 +2,15 @@
 This project is to create disposable test environments and run a variety of automated tests using azure devops to ensure quality release.
 
 ## Dependencies
-- Azure DevOps
-- Terraform
-- JMeter
-- Postman
-- Python
-- Selenium
+1. Azure DevOps
+2. Terraform
+3. JMeter
+4. Postman
+5. Python
+6. Selenium
 
 ## Setting Up Dev Environment
-### Log output of Terraform
+* Log output of Terraform
 
 ## Build
 ### screenshot of the successful execution of the pipeline (/_build/results?buildId={id}&view=results)
