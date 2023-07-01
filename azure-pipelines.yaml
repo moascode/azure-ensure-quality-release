@@ -206,7 +206,6 @@ stages:
                     LATEST=$(wget -q -O - http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
                     wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
                     unzip -o chromedriver_linux64.zip
-                    unlink /usr/local/bin/chromedriver
                     sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
                 fi
                 export PATH=$PATH:$PWD/chromedriver
@@ -220,7 +219,7 @@ stages:
                 echo "Starting Selenium Tests"
                 python3 output/selenium/add_remove_from_cart.py >> output/selenium/result/selenium.log
                 echo "Completed Selenium Tests."
-                cat selenium.log
+                cat output/selenium/result/selenium.log
                 pwd
               workingDirectory: $(Pipeline.Workspace)/drop-uitests
 
