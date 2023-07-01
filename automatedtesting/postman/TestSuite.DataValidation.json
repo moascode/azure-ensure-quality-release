@@ -1,0 +1,141 @@
+{
+	"info": {
+		"_postman_id": "fabdd7df-83cc-4bc6-9112-d96f129ee18d",
+		"name": "TestSuite.DataValidation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "7710323"
+	},
+	"item": [
+		{
+			"name": "Get All Books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"Book list has 200 books\", function () {\r",
+							"    pm.expect(jsonData.length).to.eql(200);\r",
+							"});\r",
+							"pm.test(\"Book list has book Title\", function () {\r",
+							"    pm.expect(jsonData[0]).to.have.property(\"Title\");\r",
+							"});\r",
+							"pm.test(\"Book with id=1 has title 'Book 1'\", function () {\r",
+							"    pm.expect(jsonData[0].Title).to.eql(\"Book 1\");\r",
+							"    \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/{{path}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Post Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"Book ID is 3\", function () {\r",
+							"    pm.expect(jsonData.ID).to.eql(3);\r",
+							"});\r",
+							"pm.test(\"Book Title is correct\", function () {\r",
+							"    pm.expect(jsonData.Title).to.eql('Book 3 mohal');\r",
+							"});\r",
+							"pm.test(\"Book Description is correct\", function () {\r",
+							"    pm.expect(jsonData.Description).to.eql('Book Number 3 for mohal');\r",
+							"});\r",
+							"pm.test(\"Book Excerpt is correct\", function () {\r",
+							"    pm.expect(jsonData.Excerpt).to.eql('excerpt article 3 mohal');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ID\": \"{{id}}\",\r\n  \"Title\": \"{{title}}\",\r\n  \"Description\": \"{{description}}\",\r\n  \"PageCount\": \"{{pageCount}}\",\r\n  \"Excerpt\": \"{{excerpt}}\",\r\n  \"PublishDate\": \"{{publishDate}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/{{path}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"Book Description is updated\", function () {\r",
+							"    pm.expect(jsonData.Description).to.eql('Book Number 3 for mohal updated');\r",
+							"});\r",
+							"pm.test(\"Book Excerpt is updated\", function () {\r",
+							"    pm.expect(jsonData.Excerpt).to.eql('excerpt article 3 mohal updated');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ID\": \"{{id}}\",\r\n  \"Title\": \"{{title}}\",\r\n  \"Description\": \"{{updateDescription}}\",\r\n  \"PageCount\": \"{{pageCount}}\",\r\n  \"Excerpt\": \"{{updateExcerpt}}\",\r\n  \"PublishDate\": \"{{publishDate}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/{{path}}/{{id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response body is empty\", function () {\r",
+							"    pm.response.to.have.body(\"\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{url}}/{{path}}/{{id}}"
+			},
+			"response": []
+		}
+	]
+}

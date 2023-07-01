@@ -1,0 +1,64 @@
+{
+	"info": {
+		"_postman_id": "b94e47f4-8f30-4f53-8d7c-64ef29860c0d",
+		"name": "TestSuite.Regression",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "7710323"
+	},
+	"item": [
+		{
+			"name": "Get All Books",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/{{path}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Post Book",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ID\": \"{{id}}\",\r\n  \"Title\": \"{{title}}\",\r\n  \"Description\": \"{{description}}\",\r\n  \"PageCount\": \"{{pageCount}}\",\r\n  \"Excerpt\": \"{{excerpt}}\",\r\n  \"PublishDate\": \"{{publishDate}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/{{path}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Book",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"ID\": \"{{id}}\",\r\n  \"Title\": \"{{title}}\",\r\n  \"Description\": \"{{updateDescription}}\",\r\n  \"PageCount\": \"{{pageCount}}\",\r\n  \"Excerpt\": \"{{updateExcerpt}}\",\r\n  \"PublishDate\": \"{{publishDate}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{url}}/{{path}}/{{id}}"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Book",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "{{url}}/{{path}}/{{id}}"
+			},
+			"response": []
+		}
+	]
+}
